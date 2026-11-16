@@ -76,6 +76,3 @@ The `screenshots/` directory contains the reference screenshots included with th
 - For S3, keep the bucket private and use least-privilege IAM permissions. Prefer an EC2 instance role, ECS task role or local AWS profile rather than storing long-lived access keys in source files. Existing local files remain local when switching the driver; only new uploads use S3.
 - Full npm installation, frontend build, MongoDB integration tests and live S3 tests still need to be run in an environment with package registry access and an AWS account. See `OASIS_REVIEW.md` for the verification record and remaining production-hardening work.
 
-## Attribution
-
-Based on [G_Drive_Clone](https://github.com/Ketan-Mane/G_Drive_Clone) by Ketan Mane, used with permission. Oasis adds its own branding, interface customizations, and storage changes.

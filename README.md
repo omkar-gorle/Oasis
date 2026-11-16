@@ -63,7 +63,47 @@ Frontend: copy `frontend/.env.example` to `frontend/.env`, set `VITE_API_URL=htt
 
 ## Screenshots
 
-The `screenshots/` directory contains the reference screenshots included with the supplied CloudNest archive. They document the source application screens and are not fresh browser captures of the Oasis UI. A new runtime screenshot set is pending a successful dependency install and app launch.
+The `screenshots/` directory contains individual reference screenshots from the source application, not fresh browser captures of the Oasis UI.
+
+### Dashboard
+
+![Dashboard](screenshots/Dashboard.png)
+
+### Folder Navigation
+
+![Folder Navigation](screenshots/Folder_Navigation.png)
+
+### Search Files
+
+![Search Files](screenshots/Search_Files.png)
+
+### Search Files 2
+
+![Search Files 2](screenshots/Search_Files_2.png)
+
+### File Details
+
+![File Details](screenshots/File_Details.png)
+
+### Shared With Me
+
+![Shared With Me](screenshots/Shared_With_Me.png)
+
+### Update Access
+
+![Update Access](screenshots/Update_Access.png)
+
+### Bin
+
+![Bin](screenshots/Bin.png)
+
+### Update Password
+
+![Update Password](screenshots/Update_Password.png)
+
+### Preview File
+
+![Preview File](screenshots/Preview_File.png)
 
 ## Security and deployment notes
 
@@ -75,4 +115,3 @@ The `screenshots/` directory contains the reference screenshots included with th
 - The supplied Docker Compose setup uses named volumes for MongoDB, local uploads and thumbnails. Back up these volumes.
 - For S3, keep the bucket private and use least-privilege IAM permissions. Prefer an EC2 instance role, ECS task role or local AWS profile rather than storing long-lived access keys in source files. Existing local files remain local when switching the driver; only new uploads use S3.
 - Full npm installation, frontend build, MongoDB integration tests and live S3 tests still need to be run in an environment with package registry access and an AWS account. See `OASIS_REVIEW.md` for the verification record and remaining production-hardening work.
-

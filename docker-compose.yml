@@ -1,0 +1,69 @@
+services:
+    mongodb:
+        image: mongo
+        container_name: mongo
+        restart: always
+        ports:
+            - 27017:27017
+        volumes:
+            - mongo-data:/data/db
+        healthcheck:
+            test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+        networks:
+            - oasis-network
+
+    api:
+        build:
+            context: ./backend
+        container_name: api
+        restart: always
+        ports:
+            - 8000:8000
+        environment:
+            - NODE_ENV=production
+            - PORT=8000
+            - MONGODB_URI=mongodb://mongo:27017
+            - DATABASE_NAME=oasis
+            - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in the root .env file}
+            - APP_URL=http://localhost:8000
+            - FRONTEND_ORIGIN=http://localhost
+            - COOKIE_SECURE=false
+            - MAX_FILE_SIZE_BYTES=104857600
+            - STORAGE_DRIVER=${STORAGE_DRIVER:-local}
+            - AWS_REGION=${AWS_REGION:-}
+            - AWS_BUCKET_NAME=${AWS_BUCKET_NAME:-}
+        volumes:
+            - oasis-storage:/app/src/storage
+            - oasis-thumbnails:/app/src/public/thumbnail
+        depends_on:
+            mongodb:
+                condition: service_healthy
+        networks:
+            - oasis-network
+
+    web:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        container_name: web
+        restart: always
+        ports:
+            - 80:80
+        environment:
+        depends_on:
+            - api
+        networks:
+            - oasis-network
+
+volumes:
+    mongo-data:
+    oasis-storage:
+    oasis-thumbnails:
+
+
+networks:
+    oasis-network:
+        driver: bridge

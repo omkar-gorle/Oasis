@@ -1,0 +1,71 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: oasis-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - oasis-mongo-dev:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - oasis-dev-network
+
+  api:
+    build:
+      context: ./backend
+    container_name: oasis-api-dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - oasis-storage-dev:/app/src/storage
+      - oasis-thumbnails-dev:/app/src/public/thumbnail
+    environment:
+      NODE_ENV: development
+      PORT: 8000
+      MONGODB_URI: mongodb://mongodb:27017
+      DATABASE_NAME: oasis_dev
+      JWT_SECRET: ${JWT_SECRET:-local-development-secret-change-this-before-deployment}
+      APP_URL: http://localhost:8000
+      FRONTEND_ORIGIN: http://localhost:5173
+      COOKIE_SECURE: "false"
+      MAX_FILE_SIZE_BYTES: 104857600
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - oasis-dev-network
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: oasis-web-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_PROXY_TARGET: http://api:8000
+      CHOKIDAR_USEPOLLING: "true"
+    depends_on:
+      - api
+    networks:
+      - oasis-dev-network
+
+volumes:
+  oasis-mongo-dev:
+  oasis-storage-dev:
+  oasis-thumbnails-dev:
+
+networks:
+  oasis-dev-network:
+    driver: bridge
